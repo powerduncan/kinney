@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -112,4 +114,41 @@ func TestMarshalUnmarshal(t *testing.T) {
 	} else if diff := cmp.Diff(body, parsedBody); diff != "" {
 		t.Errorf("unmarshalEnvelope(%q) mismatch (-want +got):\n%s", string(b), diff)
 	}
+}
+
+type fooRequest struct {
+	XMLName xml.Name `xml:"FooRequest"`
+	Foo     string
+}
+
+type barRequest struct {
+	XMLName xml.Name `xml:"BarRequest"`
+	Bar     string
+}
+
+type allRequests struct {
+	FooRequest *fooRequest
+	BarRequest *barRequest
+}
+
+func (r *allRequests) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	switch start.Name.Local {
+	case "FooRequest":
+		r.FooRequest = &fooRequest{}
+		return d.DecodeElement(r.FooRequest, &start)
+	case "BarRequest":
+		r.BarRequest = &barRequest{}
+		return d.DecodeElement(r.BarRequest, &start)
+	default:
+		return fmt.Errorf("unexpected request type: %#v", start.Name)
+	}
+}
+
+func TestServer(t *testing.T) {
+	envelope := `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/"><Body><FooRequest><Foo>content</Foo></FooRequest></Body></Envelope>`
+	var parsed allRequests
+	if err := unmarshalEnvelope([]byte(envelope), nil, &parsed); err != nil {
+		t.Error(err)
+	}
+	log.Printf("%#v", parsed.FooRequest)
 }
