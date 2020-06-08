@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -96,49 +95,31 @@ type envelope struct {
 	XMLName xml.Name `xml:"http://schemas.xmlsoap.org/soap/envelope/ Envelope"`
 
 	Header struct {
-		InnerXML []byte `xml:",innerxml"`
+		Payload interface{} `xml:",any"`
 	} `xml:"Header"`
 	Body struct {
-		InnerXML []byte `xml:",innerxml"`
+		Payload interface{} `xml:",any"`
 	} `xml:"Body"`
 }
 
-func marshalEnvelope(header, body interface{}) (b []byte, err error) {
-	envelope := &envelope{}
+func marshalEnvelope(header, body interface{}) ([]byte, error) {
+	var env envelope
+	env.Header.Payload = header
+	env.Body.Payload = body
 
-	envelope.Header.InnerXML, err = xml.Marshal(header)
+	b, err := xml.Marshal(&env)
 	if err != nil {
-		return nil, fmt.Errorf("error marshalling SOAP header: %w", err)
+		return nil, fmt.Errorf("error marshaling SOAP envelope: %w", err)
 	}
-	envelope.Body.InnerXML, err = xml.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("error marshalling SOAP body: %w", err)
-	}
-
-	b, err = xml.Marshal(envelope)
-	if err != nil {
-		return nil, fmt.Errorf("error marshalling SOAP envelope: %w", err)
-	}
-	return b, err
+	return b, nil
 }
 
 func unmarshalEnvelope(b []byte, header, body interface{}) error {
-	envelope := &envelope{}
-	if err := xml.Unmarshal(b, envelope); err != nil {
+	var env envelope
+	env.Header.Payload = header
+	env.Body.Payload = body
+	if err := xml.Unmarshal(b, &env); err != nil {
 		return fmt.Errorf("error unmarshalling SOAP envelope: %w", err)
 	}
-
-	if (header == nil) != (envelope.Header.InnerXML == nil) {
-		return errors.New("`header` and the SOAP header must both be `nil`, or both be specified")
-	} else if envelope.Header.InnerXML != nil {
-		if err := xml.Unmarshal(envelope.Header.InnerXML, &header); err != nil {
-			return fmt.Errorf("error unmarshalling SOAP header: %w", err)
-		}
-	}
-
-	if err := xml.Unmarshal(envelope.Body.InnerXML, &body); err != nil {
-		return fmt.Errorf("error unmarshalling SOAP body: %w", err)
-	}
-
 	return nil
 }

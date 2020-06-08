@@ -11,7 +11,7 @@ type GetCPNInstancesRequest struct {
 }
 
 type GetCPNInstancesResponse struct {
-	XMLName xml.Name `xml:"getCPNInstancesResponse"`
+	XMLName xml.Name `xml:"urn:dictionary:com.chargepoint.webservices getCPNInstancesResponse"`
 
 	ChargePointNetworks []struct {
 		ChargePointNetworkID          string `xml:"cpnID,omitempty"`

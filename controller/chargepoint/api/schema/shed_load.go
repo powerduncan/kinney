@@ -62,7 +62,7 @@ type ShedLoadRequest struct {
 }
 
 type ShedLoadResponse struct {
-	XMLName xml.Name `xml:"shedLoadResponse"`
+	XMLName xml.Name `xml:"urn:dictionary:com.chargepoint.webservices shedLoadResponse"`
 
 	commonResponseParameters
 

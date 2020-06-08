@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"encoding/xml"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 	"time"
 
@@ -64,11 +66,29 @@ func TestSOAPCall(t *testing.T) {
 	}
 }
 
-const envelopeXML = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/"><Header><string>foo</string></Header><Body><string>bar</string></Body></Envelope>`
+var envelopeXML = regexp.MustCompile(`\s*<`).ReplaceAllString(`
+<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+  <Header>
+    <Payload xmlns="http://example.com">
+      <Element>header</Element>
+    </Payload>
+  </Header>
+  <Body>
+    <Payload xmlns="http://example.com">
+      <Element>body</Element>
+    </Payload>
+  </Body>
+</Envelope>`, "<")
+
+type payload struct {
+	XMLName xml.Name `xml:"http://example.com Payload"`
+
+	Element string `xml:"Element"`
+}
 
 func TestMarshalUnmarshal(t *testing.T) {
-	header := "foo"
-	body := "bar"
+	header := payload{Element: "header"}
+	body := payload{Element: "body"}
 
 	b, err := marshalEnvelope(&header, &body)
 	if err != nil {
@@ -77,10 +97,17 @@ func TestMarshalUnmarshal(t *testing.T) {
 		t.Errorf("marshalEnvelope(%#v, %#v) mismatch (-want +got):\n%s", &header, &body, diff)
 	}
 
-	var parsedHeader, parsedBody string
+	var parsedHeader, parsedBody payload
 	if err := unmarshalEnvelope(b, &parsedHeader, &parsedBody); err != nil {
 		t.Errorf("unmarshalEnvelope(%q) = %q; want nil", string(b), err)
-	} else if diff := cmp.Diff(header, parsedHeader); diff != "" {
+	}
+
+	// Set the `XMLName` field in the original values since it will be set
+	// in the unmarshaled values (it will be set to the full name of the
+	// element that were unmarshaled into the value).
+	header.XMLName = xml.Name{"http://example.com", "Payload"}
+	body.XMLName = xml.Name{"http://example.com", "Payload"}
+	if diff := cmp.Diff(header, parsedHeader); diff != "" {
 		t.Errorf("unmarshalEnvelope(%q) mismatch (-want +got):\n%s", string(b), diff)
 	} else if diff := cmp.Diff(body, parsedBody); diff != "" {
 		t.Errorf("unmarshalEnvelope(%q) mismatch (-want +got):\n%s", string(b), diff)

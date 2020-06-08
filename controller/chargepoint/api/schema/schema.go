@@ -23,10 +23,4 @@
 // ones mapping to elements whose parents do not uniquely identify their name)
 // should define an element name (via an `xml.Name` field), as it will always be
 // overwritten by the containing element.
-//
-// TODO(james): As a result of the recursive way that SOAP Envelope messages are
-// currently umarshaled, response types may not specify an XML namespace in
-// their `xml.Name` field.  This limitation may be resolved by using an
-// `interface{}` value for the body and using a single-pass parse, rather than
-// the current recursive/two-pass approach.
 package schema

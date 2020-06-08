@@ -12,7 +12,7 @@ type GetStationGroupsRequest struct {
 }
 
 type GetStationGroupsResponse struct {
-	XMLName xml.Name `xml:"getStationGroupsResponse"`
+	XMLName xml.Name `xml:"urn:dictionary:com.chargepoint.webservices getStationGroupsResponse"`
 
 	commonResponseParameters
 

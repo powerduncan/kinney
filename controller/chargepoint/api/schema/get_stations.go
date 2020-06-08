@@ -137,7 +137,7 @@ type PricingSession struct {
 }
 
 type GetStationsResponse struct {
-	XMLName xml.Name `xml:"getStationsResponse"`
+	XMLName xml.Name `xml:"urn:dictionary:com.chargepoint.webservices getStationsResponse"`
 
 	commonResponseParameters
 

@@ -29,7 +29,7 @@ type ClearShedStateRequest struct {
 }
 
 type ClearShedStateResponse struct {
-	XMLName xml.Name `xml:"clearShedStateResponse"`
+	XMLName xml.Name `xml:"urn:dictionary:com.chargepoint.webservices clearShedStateResponse"`
 
 	commonResponseParameters
 

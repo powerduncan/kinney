@@ -16,7 +16,7 @@ type GetLoadRequest struct {
 }
 
 type GetLoadResponse struct {
-	XMLName xml.Name `xml:"getLoadResponse"`
+	XMLName xml.Name `xml:"urn:dictionary:com.chargepoint.webservices getLoadResponse"`
 
 	commonResponseParameters
 
