@@ -13,5 +13,6 @@ require (
 	google.golang.org/genproto v0.0.0-20200319113533-08878b785e9c
 	google.golang.org/grpc v1.28.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200605192255-479df5ea818c // indirect
+	google.golang.org/protobuf v1.23.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
