@@ -82,7 +82,7 @@ func soapCall(ctx context.Context, c *http.Client, url string, reqHeader, reqBod
 		return logEntry.Err
 	}
 
-	if err := unmarshalEnvelope(respBytes, respHeader, respBody); err != nil {
+	if err := UnmarshalEnvelope(respBytes, respHeader, respBody); err != nil {
 		logEntry.Err = fmt.Errorf("error unmarshaling response: %w", err)
 		return logEntry.Err
 	}
@@ -114,7 +114,7 @@ func marshalEnvelope(header, body interface{}) ([]byte, error) {
 	return b, nil
 }
 
-func unmarshalEnvelope(b []byte, header, body interface{}) error {
+func UnmarshalEnvelope(b []byte, header, body interface{}) error {
 	var env envelope
 	env.Header.Payload = header
 	env.Body.Payload = body

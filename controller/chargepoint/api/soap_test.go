@@ -98,8 +98,8 @@ func TestMarshalUnmarshal(t *testing.T) {
 	}
 
 	var parsedHeader, parsedBody payload
-	if err := unmarshalEnvelope(b, &parsedHeader, &parsedBody); err != nil {
-		t.Errorf("unmarshalEnvelope(%q) = %q; want nil", string(b), err)
+	if err := UnmarshalEnvelope(b, &parsedHeader, &parsedBody); err != nil {
+		t.Errorf("UnmarshalEnvelope(%q) = %q; want nil", string(b), err)
 	}
 
 	// Set the `XMLName` field in the original values since it will be set
@@ -108,8 +108,8 @@ func TestMarshalUnmarshal(t *testing.T) {
 	header.XMLName = xml.Name{"http://example.com", "Payload"}
 	body.XMLName = xml.Name{"http://example.com", "Payload"}
 	if diff := cmp.Diff(header, parsedHeader); diff != "" {
-		t.Errorf("unmarshalEnvelope(%q) mismatch (-want +got):\n%s", string(b), diff)
+		t.Errorf("UnmarshalEnvelope(%q) mismatch (-want +got):\n%s", string(b), diff)
 	} else if diff := cmp.Diff(body, parsedBody); diff != "" {
-		t.Errorf("unmarshalEnvelope(%q) mismatch (-want +got):\n%s", string(b), diff)
+		t.Errorf("UnmarshalEnvelope(%q) mismatch (-want +got):\n%s", string(b), diff)
 	}
 }
