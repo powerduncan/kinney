@@ -28,11 +28,6 @@ func TestMarshal(t *testing.T) {
 			    <shedGroup>
 			      <sgID>1234</sgID>
 			    </shedGroup>
-			    <shedStation>
-			      <Ports>
-				<Port></Port>
-			      </Ports>
-			    </shedStation>
 			  </shedQuery>
 			</clearShedState>`,
 		},
@@ -44,17 +39,16 @@ func TestMarshal(t *testing.T) {
 			  <shedQuery>
 			    <shedStation>
 			      <stationID>station id</stationID>
-			      <Ports>
-				<Port></Port>
-			      </Ports>
 			    </shedStation>
 			  </shedQuery>
 			</clearShedState>`,
 		},
 		"ClearShedStateRequest_PortNumbers": {
 			&ClearShedStateRequest{
-				StationID:   newString("station id"),
-				PortNumbers: []string{"0", "1"},
+				StationID: newString("station id"),
+				Ports: &ClearShedStateRequest_Ports{
+					PortNumbers: []string{"0", "1"},
+				},
 			},
 			`<clearShedState xmlns="urn:dictionary:com.chargepoint.webservices">
 			  <shedQuery>

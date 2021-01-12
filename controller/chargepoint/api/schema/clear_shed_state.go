@@ -18,7 +18,11 @@ type ClearShedStateRequest struct {
 	//
 	// TODO(james): Check if this is actually implemented in the API server.
 	// If not, it should be removed from this schema representation.
-	PortNumbers []string `xml:"shedQuery>shedStation>Ports>Port>portNumber,omitempty"`
+	Ports *ClearShedStateRequest_Ports `xml:"shedQuery>shedStation>Ports,omitempty"`
+}
+
+type ClearShedStateRequest_Ports struct {
+	PortNumbers []string `xml:"Port>portNumber"`
 }
 
 type ClearShedStateResponse struct {
